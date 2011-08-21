@@ -13,7 +13,7 @@ githubCommitApi = gitHubApi.getCommitApi()
 Search = require 'complex-search'
 
 BASIC_AUTH_DATA = "Basic #{new Buffer(config.github.auth).toString 'base64'}"
-BOTSAFE = /[a-zA-Z0-9]/
+BOTSAFE = /^[-_a-zA-Z0-9]$/
 NICKNAME_REGEX = /^[a-zA-Z0-9_][.a-zA-Z0-9_+-]+$/
 
 npmData = {}
@@ -145,6 +145,8 @@ commands =
     if value.length is 0
       return reply "you need to specify name and definition", error: true
     value = value.join ' '
+    unless BOTSAFE.exec name
+      return reply "that name doesn't match #{BOTSAFE}"
     unless BOTSAFE.exec value[0]
       return reply "that value starts with a non-alphanumeric character, I don't want to store bot commands", error: true
     docid = "definitions:#{name}"
@@ -236,6 +238,8 @@ commands =
   mem: (message, [name, substitutions...], reply) ->
     if not name?
       return reply "you need to specify a name", error: true
+    unless BOTSAFE.exec name
+      return reply "that name doesn't match #{BOTSAFE}"
     database.get "definitions:#{name}", (err, doc) ->
       if err?
         reply "i don't know what a #{name} is", error: true
