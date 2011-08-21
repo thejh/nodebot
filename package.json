@@ -1,0 +1,18 @@
+{
+  "name": "nodebot",
+  "subdomain": "nodebot",
+  "scripts": {
+    "start": "server.js"
+  },
+  "dependencies": {
+    "coffee-script": "*",
+    "complex-search": "*",
+    "npm": "*",
+    "irc-js": "*",
+    "cradle": "*",
+    "github": "*",
+    "request": "*",
+    "http-get": "*"
+  },
+  "version": "0.0.0-10"
+}
