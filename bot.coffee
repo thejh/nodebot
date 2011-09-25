@@ -571,7 +571,7 @@ irc.on 'notice', (args) ->
     if 0 == message.indexOf 'You are now identified'
       console.log 'alright, were identified, go on'
       setTimeout (->
-        irc.join "##{chan}" for chan in ['node.js', 'coffeescript', 'nodejitsu']
+        irc.join "##{chan}" for chan in ['node.js', 'coffeescript', 'nodejitsu', 'relief1']
       ), 10000
     userinfoMatch = NICKSERV_USERINFO_REGEX.exec message
     if userinfoMatch?
