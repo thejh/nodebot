@@ -233,7 +233,7 @@ commands =
           return reply "no issues found"
         reply "found issues: #{foundIssueCount}#{[if foundIssueCount > MAX_ISSUES_COUNT then ", showing the first #{MAX_ISSUES_COUNT}"]}"
         for {number, title} in foundIssues
-          reply "Issue: ##{number}: #{title}"
+          reply "Issue: https://github.com/joyent/node/issues/#{number} : #{title}"
         return
   mem: (message, [name, substitutions...], reply) ->
     if not name?
