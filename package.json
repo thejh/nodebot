@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "coffee-script": "*",
+    "coco": "*",
     "complex-search": "*",
     "npm": "*",
     "irc-js": "*",

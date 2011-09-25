@@ -1,4 +1,5 @@
 coffee = require 'coffee-script'
+coco = require 'coco'
 config = JSON.parse require('fs').readFileSync __dirname+'/config.json', 'utf8'
 https = require 'https'
 npm = require 'npm'
@@ -249,6 +250,16 @@ commands =
           for subst in substitutions
             data = data.replace '$', subst
         reply data
+  coco:
+    compile: (message, code, reply) ->
+      code = code.join " "
+      try
+        compiled = coco.compile code, bare: true
+        compiled = compiled.replace /\n/g, ' '
+        compiled = compiled.replace /\s+/g, ' '
+        reply compiled
+      catch e
+        reply 'compile() failed', error: true
   coffee:
     compile: (message, code, reply) ->
       code = code.join " "
