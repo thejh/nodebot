@@ -1,3 +1,4 @@
+process.on('uncaughtException', function (err) { console.err(err ? err.stack || err : err) })
 require('coffee-script')
 var http = require('http');
 require('./bot');
