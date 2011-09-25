@@ -1,6 +1,6 @@
 {
-  "name": "nodebot",
-  "subdomain": "nodebot",
+  "name": "nodebot2",
+  "subdomain": "nodebot2",
   "scripts": {
     "start": "server.js"
   },
