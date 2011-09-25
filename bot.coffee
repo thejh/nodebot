@@ -355,7 +355,9 @@ commands =
             return reply "error: #{err}", error: true
   help: (message, [botname]) ->
     if not botname
-      return reply message.person.nick, "For help with this bot (a minute of one line per 2 seconds), type `!help jhbot`."
+      if message.params[0] isnt '#nodejitsu'
+        reply message.person.nick, "For help with this bot (a minute of one line per 2 seconds), type `!help jhbot`."
+      return
     return if botname isnt 'jhbot'
     syntaxes =
       "remember": "<keyword> <string>"
