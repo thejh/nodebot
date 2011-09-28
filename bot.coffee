@@ -321,6 +321,14 @@ commands =
           else
             msg = "owners: " + ("#{o.name} <#{o.email}>" for o in owners).join ', '
           reply msg
+    info: (message, [package], reply) ->
+      if not package?
+        return reply "package name missing", error: true
+      updateNpm (npmData) ->
+        if not npmData[package]?
+          return reply "couldn't find that package"
+        package = npmData[package]
+        reply "#{package.name} by #{package.author.name}, version #{package['dist-tags'].latest}: #{package.description}"
     search: (message, keywords, reply) ->
       NAMESLIMIT = 20
       if keywords.length == 0
