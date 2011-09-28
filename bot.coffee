@@ -535,13 +535,13 @@ genericWarnings = (original, nick, message, channel) ->
     github.getGist gist_match[1], (err, gist) ->
       return if err?
       for filename, {content} of gist.files
-        if content.indexOf('npm info using npm@0.') != -1
+        if content.indexOf('info using npm@0.') != -1
           warn "that version of npm (0.x) is ancient. update npm with `curl http://npmjs.org/install.sh | sudo sh`."
         if content.indexOf("Error: Cannot find module 'graceful-fs'") != -1 and content.indexOf("fetching: http://registry.npmjs.org/") != -1
           warn "that version of nodejs is ancient, use 0.4.x or newer"
-        if content.indexOf("npm ERR! TypeError: Cannot call method 'filter' of undefined") != -1
+        if content.indexOf("ERR! TypeError: Cannot call method 'filter' of undefined") != -1
           warn "that version of npm doesn't cleanly self-update, use `curl http://npmjs.org/install.sh | sudo sh`"
-        if content.indexOf("npm ERR! tar") != -1 and content.indexOf("Ignoring unknown extended header") != -1
+        if content.indexOf("ERR! tar") != -1 and content.indexOf("Ignoring unknown extended header") != -1
           warn "your 'tar' program is broken/outdated, install a new one"
 
 irc.on 'privmsg', (args) ->
