@@ -551,6 +551,10 @@ genericWarnings = (original, nick, message, channel) ->
           warn "that version of npm doesn't cleanly self-update, use `curl http://npmjs.org/install.sh | sudo sh`"
         if content.indexOf("ERR! tar") != -1 and content.indexOf("Ignoring unknown extended header") != -1
           warn "your 'tar' program is broken/outdated, install a new one"
+        if /npm info using node@v[0-9]+\.[0-9]+\.[0-9]+-pre/.test(content)
+          warn """you're using a very unstable version of node (git master/HEAD). If you don't want to run into problems like this one,
+                use a stable version (in x.y.z, y is an even number and there's no -pre at the end of the version). Of course, you should
+                report problems anyway - after all, what's unstable now is supposed to become stable soon."""
 
 irc.on 'privmsg', (args) ->
   BOTS = ['jhbot', 'v8bot', 'v8bot_', 'catbot', 'kohai']
