@@ -17,6 +17,29 @@ BASIC_AUTH_DATA = "Basic #{new Buffer(config.github.auth).toString 'base64'}"
 BOTSAFE = /^[-_a-zA-Z0-9]+$/
 NICKNAME_REGEX = /^[a-zA-Z0-9_][.a-zA-Z0-9_+-]+$/
 
+docKeywords = {}
+lastDocsUpdate = 0
+docsFetching = null
+updateDocs = (cb) ->
+  return cb(docKeywords) if (new Date().getTime() - lastDocsUpdate) < 1000*60*5
+  return docsFetching.push cb if docsFetching?
+  docsFetching = [cb]
+  request {
+    uri: "http://nodejs.org/docs/latest/api/all.html"
+  }, (error, response, body) ->
+    body.split('<h2 ').slice(1).map (sectionHTML) ->
+      sectionID = sectionHTML.split('"')[1]
+      sectionTitle = sectionHTML.split('>')[1].split('<')[0]
+      section = id: sectionID, title: sectionTitle
+      sectionHTML.split(/[^a-zA-Z0-9_]/).forEach (word) ->
+        word = word.toLowerCase()
+        return if word.length is 0
+        docKeywords[word] = [] if not docKeywords.hasOwnProperty(word)
+        docKeywords[word].push section if docKeywords[word].indexOf(section) is -1
+    lastDocsUpdate = new Date().getTime()
+    callback(docKeywords) for callback in docsFetching
+    docsFetching = null
+
 npmData = {}
 lastNpmUpdate = 0
 lastNpmUpdateLocaltime = 0
@@ -308,6 +331,30 @@ commands =
     eval: (message, code, reply) ->
       code = code.join ' '
       reply eval code
+  docs:
+    search: (message, keywords, reply) ->
+      NAMESLIMIT = 3
+      if keywords.length is 0
+        return reply "you must specify at least one keyword", error: true
+      updateDocs (docKeywords) ->
+        try
+          search = new Search keywords.join(' ').toLowerCase(), (results) ->
+            return reply "no results" if results.length is 0
+            if results.length > NAMESLIMIT
+              truncated = true
+              results = results.slice 0, NAMESLIMIT
+            reply "truncated list:" if truncated
+            for result in results
+              reply "section \"#{result.title}\": http://nodejs.org/docs/latest/api/all.html##{result.id}"
+            return
+          for keyword in search.keywords
+            search.provideKeywordData keyword, docKeywords[keyword] or []
+        catch err
+          if err.stack?
+            console.log err.stack
+            return reply "internal error", error: true
+          else
+            return reply "error: #{err}", error: true
   npm:
     owner: (message, [package], reply) ->
       if not package?
