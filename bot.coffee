@@ -376,6 +376,20 @@ commands =
           return reply "couldn't find that package"
         package = npmData[package]
         reply "#{package.name} by #{package.author.name}, version #{package['dist-tags'].latest}: #{package.description}"
+    prop: (message, [package, propertyName], reply) ->
+      if not package
+        return reply "no package name specified", error: true
+      if not propertyName
+        return reply "no property specified", error: true
+      updateNpm (npmData) ->
+        if not npmData.hasOwnProperty package
+          return reply "package not found", error: true
+        if not npmData[package].hasOwnProperty propertyName
+          return reply "property is not defined", error: true
+        propertyValue = npmData[package][propertyName]
+        if typeof propertyValue is 'object'
+          propertyValue = JSON.stringify propertyValue
+        reply "#{npmData[package].name} has #{propertyName} #{propertyValue}"
     search: (message, keywords, reply) ->
       NAMESLIMIT = 20
       if keywords.length == 0
