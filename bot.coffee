@@ -535,7 +535,7 @@ genericWarnings = (original, nick, message, channel) ->
   nick = " #{nick}" if not NICKNAME_REGEX.exec nick
   GIST_REGEX = /https:\/\/gist\.github\.com\/([0-9a-f]+)/
   gist_match = GIST_REGEX.exec message
-  warn = (warning) -> reply original, "#{nick}, #{warning}"
+  warn = (warning) -> reply original, "#{nick}, my almighty, artificially created brain says that #{warning.replace(/\n/g, ' ')}"
   if channel == '#node.js' and message.indexOf('graceful-fs') != -1 and message.indexOf('npm') != -1
     nick = " #{nick}" if not NICKNAME_REGEX.exec nick
     reply args, "#{nick}, if you have problems installing npm because of some 'graceful-fs not found' error, your node.js version is outdated."
