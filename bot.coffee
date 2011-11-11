@@ -12,6 +12,7 @@ githubIssueApi = gitHubApi.getIssueApi()
 githubObjectApi = gitHubApi.getObjectApi()
 githubCommitApi = gitHubApi.getCommitApi()
 Search = require 'complex-search'
+querystring = require 'querystring'
 
 BASIC_AUTH_DATA = "Basic #{new Buffer(config.github.auth).toString 'base64'}"
 BOTSAFE = /^[-_a-zA-Z0-9]+$/
@@ -163,6 +164,9 @@ getIssueList = (cb) ->
       _cachedIssueListUpdated = time
     console.log "fetched issue list in #{new Date().getTime()-time}ms"
     cb err, issues
+
+wpheaders =
+  'User-Agent': 'jhbot by Jann Horn, contact: jannhorn@googlemail.com'
 
 commands =
   remember: (message, [name, value...], reply) ->
@@ -433,6 +437,24 @@ commands =
             return reply "internal error", error: true
           else
             return reply "error: #{err}", error: true
+  translate: (message, [srclang, dstlang, word], reply) ->
+    return (reply "that srclang (#{srclang}) isnt supported", error: true) if srclang isnt 'de' and srclang isnt 'en'
+    reqopts =
+      uri: "http://#{srclang}.wiktionary.org/w/index.php?action=raw&title=#{encodeURIComponent word}"
+      headers: wpheaders
+    request reqopts, (err, response, body) ->
+      console.log "TRANSLATE ERR <<<"+err+">>>" if err
+      return (reply 'error in "translate"', error: true) if err or not body
+      hits = []
+      body.replace /{{(Ü|t|t\+|t-)\|([^|]+)\|([^}]+)}}/g, (_, _, curDst, translation) ->
+        return unless curDst is dstlang
+        return if -1 isnt translation.indexOf '\n'
+        return if -1 isnt translation.indexOf '\r'
+        hits.push translation
+      hits = hits.join ', '
+      hits = '<not found>' if hits.length is 0
+      hits = (hits.slice 0, 400) + ' <truncated>' if hits.length > 400
+      reply "translations #{srclang}->#{dstlang}: #{hits}"
   help: (message, [botname]) ->
     if not botname
       if message.params[0] isnt '#nodejitsu'
@@ -657,7 +679,7 @@ irc.on 'notice', (args) ->
     if 0 == message.indexOf 'You are now identified'
       console.log 'alright, were identified, go on'
       setTimeout (->
-        irc.join "##{chan}" for chan in ['node.js', 'coffeescript', 'nodejitsu', 'relief1']
+        irc.join "##{chan}" for chan in ['node.js', 'coffeescript', 'nodejitsu', 'relief1', '#deutsch']
       ), 10000
     userinfoMatch = NICKSERV_USERINFO_REGEX.exec message
     if userinfoMatch?
