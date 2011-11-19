@@ -438,7 +438,7 @@ commands =
           else
             return reply "error: #{err}", error: true
   translate: (message, [srclang, dstlang, word], reply) ->
-    return (reply "that srclang (#{srclang}) isnt supported", error: true) if srclang isnt 'de' and srclang isnt 'en'
+    return (reply "that srclang (#{srclang}) isnt supported", error: true) if srclang isnt 'de' and srclang isnt 'en' and srclang isnt 'fi'
     reqopts =
       uri: "http://#{srclang}.wiktionary.org/w/index.php?action=raw&title=#{encodeURIComponent word}"
       headers: wpheaders
@@ -446,7 +446,11 @@ commands =
       console.log "TRANSLATE ERR <<<"+err+">>>" if err
       return (reply 'error in "translate"', error: true) if err or not body
       hits = []
-      body.replace /{{(Ü|t|t\+|t-)\|([^|]+)\|([^}]+)}}/g, (_, _, curDst, translation) ->
+      translateRegex = if srclang is 'fi'
+        /\*({{)([^}]+)}}: \[\[([^\]]+)]/g
+      else
+        /{{(Ü|t|t\+|t-)\|([^|]+)\|([^}]+)}}/g
+      body.replace translateRegex, (_, _, curDst, translation) ->
         return unless curDst is dstlang
         return if -1 isnt translation.indexOf '\n'
         return if -1 isnt translation.indexOf '\r'
