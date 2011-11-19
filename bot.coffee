@@ -286,7 +286,7 @@ commands =
         compiled = compiled.replace /\s+/g, ' '
         reply compiled
       catch e
-        reply 'compile() failed', error: true
+        reply "failed: #{(e+'').split('\n')[0]}", error: true
   coffee:
     compile: (message, code, reply) ->
       code = code.join " "
@@ -296,7 +296,7 @@ commands =
         compiled = compiled.replace /\s+/g, ' '
         reply compiled
       catch e
-        reply 'compile() failed', error: true
+        reply "failed: #{(e+'').split('\n')[0]}", error: true
     compilegist: (message, [gistid], reply) ->
       if not gistid?
         if lastCsGist? and message.params[0] is '#coffeescript'
