@@ -14,6 +14,9 @@ githubCommitApi = gitHubApi.getCommitApi()
 Search = require 'complex-search'
 querystring = require 'querystring'
 
+StackOverflow = require './stackoverflow'
+
+
 BASIC_AUTH_DATA = "Basic #{new Buffer(config.github.auth).toString 'base64'}"
 BOTSAFE = /^[-_a-zA-Z0-9]+$/
 NICKNAME_REGEX = /^[a-zA-Z0-9_][.a-zA-Z0-9_+-]+$/
@@ -698,7 +701,6 @@ updateNpm (npmData) ->
 
 irc.connect ->
   irc.privmsg 'NickServ', "IDENTIFY #{config.irc.user} #{config.irc.pass}"
-  Sof = require './stackoverflow'
   
-  new Sof (line) ->
-    reply '#node.js', line
+  new StackOverflow 'node.js', (line) -> reply '#node.js', line
+  new StackOverflow 'coffeescript', (line) -> reply '#coffeescript', line
