@@ -51,6 +51,6 @@ module.exports = class StackOverflow
             else
               " (tags: #{tags.join ', '})"
           link = "http://stackoverflow.com/q/#{question.question_id}"
-          @sendLine "'#{question.title}' by \x0303#{question.owner?.display_name}\x0301 #{link}#{tags}"
+          @sendLine "'#{question.title}' by #{question.owner?.display_name} #{link}#{tags}"
         @_scheudleNextRequest()
     , POLL_INTERVAL
