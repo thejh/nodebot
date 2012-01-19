@@ -653,6 +653,9 @@ irc.on 'privmsg', (args) ->
   if chanOrNick is '#coffeescript'
     autoLint args, nick, message
   genericWarnings args, nick, message, chanOrNick.toLowerCase()
+  if message.indexOf('jhbot,') is 0 or message.indexOf('jhbot:') is 0
+    reply args, "\2TURING TEST SUCCESSFULLY COMPLETED!\2"
+    return
   if message[0] isnt '!' and isChannel chanOrNick
     return
   if message[0] is '!'
