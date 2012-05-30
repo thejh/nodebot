@@ -1,5 +1,6 @@
 coffee = require 'coffee-script'
 coco = require 'coco'
+livescript = require 'LiveScript'
 config = JSON.parse require('fs').readFileSync __dirname+'/config.json', 'utf8'
 https = require 'https'
 npm = require 'npm'
@@ -285,6 +286,16 @@ commands =
       code = code.join " "
       try
         compiled = coco.compile code, bare: true
+        compiled = compiled.replace /\n/g, ' '
+        compiled = compiled.replace /\s+/g, ' '
+        reply compiled
+      catch e
+        reply "failed: #{(e+'').split('\n')[0]}", error: true
+  livescript:
+    compile: (message, code, reply) ->
+      code = code.join " "
+      try
+        compiled = livescript.compile code, bare: true
         compiled = compiled.replace /\n/g, ' '
         compiled = compiled.replace /\s+/g, ' '
         reply compiled
