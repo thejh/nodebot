@@ -713,8 +713,9 @@ irc.on 'notice', (args) ->
 updateNpm (npmData) ->
   console.log "NPM ready with #{Object.keys(npmData).length} entries"
 
-irc.connect (reply) ->
+irc.connect () ->
   irc.privmsg 'NickServ', "IDENTIFY #{config.irc.user} #{config.irc.pass}"
+  console.dir arguments
   
-  new StackOverflow 'node.js', (line) -> reply '#node.js', line
-  new StackOverflow 'coffeescript', (line) -> reply '#coffeescript', line
+  # new StackOverflow 'node.js', (line) -> reply '#node.js', line
+  # new StackOverflow 'coffeescript', (line) -> reply '#coffeescript', line
