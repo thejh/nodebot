@@ -464,7 +464,7 @@ commands =
         /\*({{)([^}]+)}}: \[\[([^\]]+)]/g
       else
         /{{(Ü|t|t\+|t-)\|([^|]+)\|([^}]+)}}/g
-      body.replace translateRegex, (_, _, curDst, translation) ->
+      body.replace translateRegex, (_, _x, curDst, translation) ->
         return unless curDst is dstlang
         return if -1 isnt translation.indexOf '\n'
         return if -1 isnt translation.indexOf '\r'
@@ -665,7 +665,7 @@ irc.on 'privmsg', (args) ->
     autoLint args, nick, message
   genericWarnings args, nick, message, chanOrNick.toLowerCase()
   if message.indexOf('jhbot,') is 0 or message.indexOf('jhbot:') is 0
-    reply args, "\2TURING TEST SUCCESSFULLY COMPLETED!\2"
+    reply args, "\u0002TURING TEST SUCCESSFULLY COMPLETED!\u0002"
     return
   if message[0] isnt '!' and isChannel chanOrNick
     return
