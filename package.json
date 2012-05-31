@@ -14,7 +14,7 @@
     "npm": "*",
     "irc-js": "*",
     "cradle": "*",
-    "github": "*",
+    "github": "<0.0.8",
     "request": "*"
   },
   "version": "0.0.0-10"
