@@ -1,5 +1,6 @@
 coffee = require 'coffee-script'
 coco = require 'coco'
+livescript = require 'LiveScript'
 config = JSON.parse require('fs').readFileSync __dirname+'/config.json', 'utf8'
 https = require 'https'
 npm = require 'npm'
@@ -65,13 +66,13 @@ github =
   # description: string
   # public: boolean
   # files: {string: content: string}
-  postGist: (description, public, files, callback) ->
+  postGist: (description, ispublic, files, callback) ->
     request {
       uri: 'https://api.github.com/gists'
       method: 'POST'
       headers:
         'Authorization': BASIC_AUTH_DATA
-      body: JSON.stringify {description, public, files}
+      body: JSON.stringify {description, public:ispublic, files}
     }, (error, response, body) ->
       if error
         return callback error
@@ -290,6 +291,16 @@ commands =
         reply compiled
       catch e
         reply "failed: #{(e+'').split('\n')[0]}", error: true
+  livescript:
+    compile: (message, code, reply) ->
+      code = code.join " "
+      try
+        compiled = livescript.compile code, bare: true
+        compiled = compiled.replace /\n/g, ' '
+        compiled = compiled.replace /\s+/g, ' '
+        reply compiled
+      catch e
+        reply "failed: #{(e+'').split('\n')[0]}", error: true
   coffee:
     compile: (message, code, reply) ->
       code = code.join " "
@@ -363,10 +374,10 @@ commands =
           else
             return reply "error: #{err}", error: true
   npm:
-    owner: (message, [package], reply) ->
-      if not package?
+    owner: (message, [pkg], reply) ->
+      if not pkg?
         return reply "package name missing", error: true
-      npm.commands.owner ['ls', package], (err, owners) ->
+      npm.commands.owner ['ls', pkg], (err, owners) ->
         if err?
           reply "error", error: true
         else
@@ -375,28 +386,28 @@ commands =
           else
             msg = "owners: " + ("#{o.name} <#{o.email}>" for o in owners).join ', '
           reply msg
-    info: (message, [package], reply) ->
-      if not package?
+    info: (message, [pkg], reply) ->
+      if not pkg?
         return reply "package name missing", error: true
       updateNpm (npmData) ->
-        if not npmData[package]?
+        if not npmData[pkg]?
           return reply "couldn't find that package"
-        package = npmData[package]
-        reply "#{package.name} by #{package.author.name}, version #{package['dist-tags'].latest}: #{package.description}"
-    prop: (message, [package, propertyName], reply) ->
-      if not package
+        pkg = npmData[pkg]
+        reply "#{pkg.name} by #{pkg.author.name}, version #{pkg['dist-tags'].latest}: #{pkg.description}"
+    prop: (message, [pkg, propertyName], reply) ->
+      if not pkg
         return reply "no package name specified", error: true
       if not propertyName
         return reply "no property specified", error: true
       updateNpm (npmData) ->
-        if not npmData.hasOwnProperty package
+        if not npmData.hasOwnProperty pkg
           return reply "package not found", error: true
-        if not npmData[package].hasOwnProperty propertyName
+        if not npmData[pkg].hasOwnProperty propertyName
           return reply "property is not defined", error: true
-        propertyValue = npmData[package][propertyName]
+        propertyValue = npmData[pkg][propertyName]
         if typeof propertyValue is 'object'
           propertyValue = JSON.stringify propertyValue
-        reply "#{npmData[package].name} has #{propertyName} #{propertyValue}"
+        reply "#{npmData[pkg].name} has #{propertyName} #{propertyValue}"
     search: (message, keywords, reply) ->
       NAMESLIMIT = 20
       if keywords.length == 0
@@ -453,7 +464,7 @@ commands =
         /\*({{)([^}]+)}}: \[\[([^\]]+)]/g
       else
         /{{(Ü|t|t\+|t-)\|([^|]+)\|([^}]+)}}/g
-      body.replace translateRegex, (_, _, curDst, translation) ->
+      body.replace translateRegex, (_, _x, curDst, translation) ->
         return unless curDst is dstlang
         return if -1 isnt translation.indexOf '\n'
         return if -1 isnt translation.indexOf '\r'
@@ -654,7 +665,7 @@ irc.on 'privmsg', (args) ->
     autoLint args, nick, message
   genericWarnings args, nick, message, chanOrNick.toLowerCase()
   if message.indexOf('jhbot,') is 0 or message.indexOf('jhbot:') is 0
-    reply args, "\2TURING TEST SUCCESSFULLY COMPLETED!\2"
+    reply args, "\u0002TURING TEST SUCCESSFULLY COMPLETED!\u0002"
     return
   if message[0] isnt '!' and isChannel chanOrNick
     return
@@ -702,8 +713,9 @@ irc.on 'notice', (args) ->
 updateNpm (npmData) ->
   console.log "NPM ready with #{Object.keys(npmData).length} entries"
 
-irc.connect ->
+irc.connect () ->
   irc.privmsg 'NickServ', "IDENTIFY #{config.irc.user} #{config.irc.pass}"
+  console.dir arguments
   
-  new StackOverflow 'node.js', (line) -> reply '#node.js', line
-  new StackOverflow 'coffeescript', (line) -> reply '#coffeescript', line
+  # new StackOverflow 'node.js', (line) -> reply '#node.js', line
+  # new StackOverflow 'coffeescript', (line) -> reply '#coffeescript', line

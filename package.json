@@ -1,5 +1,7 @@
 {
-  "name": "nodebot2",
+  "name":"nodebot",
+  "node":"0.6.17",
+  "author":"josher19",
   "subdomain": "nodebot2",
   "scripts": {
     "start": "server.js"
@@ -7,11 +9,12 @@
   "dependencies": {
     "coffee-script": "*",
     "coco": "*",
+    "LiveScript": "*",
     "complex-search": "*",
     "npm": "*",
     "irc-js": "*",
     "cradle": "*",
-    "github": "*",
+    "github": "0.0.7",
     "request": "*"
   },
   "version": "0.0.0-10"
