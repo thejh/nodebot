@@ -1,7 +1,7 @@
 {
   "name":"nodebot",
-  "node":"0.6.12",
-  "author":"josher19"
+  "node":"0.6.17",
+  "author":"josher19",
   "subdomain": "nodebot2",
   "scripts": {
     "start": "server.js"
