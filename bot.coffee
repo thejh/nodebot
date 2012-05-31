@@ -66,13 +66,13 @@ github =
   # description: string
   # public: boolean
   # files: {string: content: string}
-  postGist: (description, public, files, callback) ->
+  postGist: (description, ispublic, files, callback) ->
     request {
       uri: 'https://api.github.com/gists'
       method: 'POST'
       headers:
         'Authorization': BASIC_AUTH_DATA
-      body: JSON.stringify {description, public, files}
+      body: JSON.stringify {description, public:ispublic, files}
     }, (error, response, body) ->
       if error
         return callback error
