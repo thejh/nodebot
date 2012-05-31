@@ -374,10 +374,10 @@ commands =
           else
             return reply "error: #{err}", error: true
   npm:
-    owner: (message, [package], reply) ->
-      if not package?
+    owner: (message, [pkg], reply) ->
+      if not pkg?
         return reply "package name missing", error: true
-      npm.commands.owner ['ls', package], (err, owners) ->
+      npm.commands.owner ['ls', pkg], (err, owners) ->
         if err?
           reply "error", error: true
         else
@@ -386,28 +386,28 @@ commands =
           else
             msg = "owners: " + ("#{o.name} <#{o.email}>" for o in owners).join ', '
           reply msg
-    info: (message, [package], reply) ->
-      if not package?
+    info: (message, [pkg], reply) ->
+      if not pkg?
         return reply "package name missing", error: true
       updateNpm (npmData) ->
-        if not npmData[package]?
+        if not npmData[pkg]?
           return reply "couldn't find that package"
-        package = npmData[package]
-        reply "#{package.name} by #{package.author.name}, version #{package['dist-tags'].latest}: #{package.description}"
-    prop: (message, [package, propertyName], reply) ->
-      if not package
+        pkg = npmData[pkg]
+        reply "#{pkg.name} by #{pkg.author.name}, version #{pkg['dist-tags'].latest}: #{pkg.description}"
+    prop: (message, [pkg, propertyName], reply) ->
+      if not pkg
         return reply "no package name specified", error: true
       if not propertyName
         return reply "no property specified", error: true
       updateNpm (npmData) ->
-        if not npmData.hasOwnProperty package
+        if not npmData.hasOwnProperty pkg
           return reply "package not found", error: true
-        if not npmData[package].hasOwnProperty propertyName
+        if not npmData[pkg].hasOwnProperty propertyName
           return reply "property is not defined", error: true
-        propertyValue = npmData[package][propertyName]
+        propertyValue = npmData[pkg][propertyName]
         if typeof propertyValue is 'object'
           propertyValue = JSON.stringify propertyValue
-        reply "#{npmData[package].name} has #{propertyName} #{propertyValue}"
+        reply "#{npmData[pkg].name} has #{propertyName} #{propertyValue}"
     search: (message, keywords, reply) ->
       NAMESLIMIT = 20
       if keywords.length == 0
