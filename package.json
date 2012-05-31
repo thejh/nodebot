@@ -9,6 +9,7 @@
   "dependencies": {
     "coffee-script": "*",
     "coco": "*",
+    "LiveScript": "*",
     "complex-search": "*",
     "npm": "*",
     "irc-js": "*",
